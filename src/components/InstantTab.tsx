@@ -22,7 +22,14 @@ export function InstantTab({ speak, isSpeaking }: Props) {
   }
 
   const buildTemplateMessage = () => {
-    return TEMPLATES[templateIndex].template.replace('${number}', templateVar)
+    return TEMPLATES[templateIndex].template.replace(/\$\{[^}]+\}/, templateVar)
+  }
+
+  const handleTemplateVarChange = (value: string) => {
+    const { inputType } = TEMPLATES[templateIndex]
+    if (inputType === 'number' && value !== '' && !/^\d+$/.test(value)) return
+    if (inputType === 'text' && /\d/.test(value)) return
+    setTemplateVar(value)
   }
 
   return (
@@ -52,7 +59,7 @@ export function InstantTab({ speak, isSpeaking }: Props) {
           <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 space-y-3 flex-1">
             <select
               value={templateIndex}
-              onChange={(e) => setTemplateIndex(Number(e.target.value))}
+              onChange={(e) => { setTemplateIndex(Number(e.target.value)); setTemplateVar('') }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 md:py-3 text-sm md:text-base text-gray-800"
             >
               {TEMPLATES.map((t, i) => (
@@ -62,10 +69,10 @@ export function InstantTab({ speak, isSpeaking }: Props) {
               ))}
             </select>
             <input
-              type="number"
-              placeholder="번호 입력"
+              type={TEMPLATES[templateIndex].inputType}
+              placeholder={TEMPLATES[templateIndex].inputType === 'number' ? '번호 입력' : '음료명 입력'}
               value={templateVar}
-              onChange={(e) => setTemplateVar(e.target.value)}
+              onChange={(e) => handleTemplateVarChange(e.target.value)}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 md:py-3 text-sm md:text-base"
             />
             <p className="text-sm md:text-base text-gray-500">{buildTemplateMessage()}</p>
