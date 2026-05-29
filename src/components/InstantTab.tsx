@@ -26,7 +26,7 @@ export function InstantTab({ speak, isSpeaking }: Props) {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 md:p-6 flex flex-col gap-6">
       {/* Preset messages */}
       <section>
         <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">기본 문장</h2>
@@ -45,11 +45,11 @@ export function InstantTab({ speak, isSpeaking }: Props) {
       </section>
 
       {/* Custom sections: side by side on tablet */}
-      <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Template */}
-        <section>
+        <section className="flex flex-col">
           <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">템플릿 문장</h2>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 space-y-3 h-full">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 space-y-3 flex-1">
             <select
               value={templateIndex}
               onChange={(e) => setTemplateIndex(Number(e.target.value))}
@@ -80,9 +80,9 @@ export function InstantTab({ speak, isSpeaking }: Props) {
         </section>
 
         {/* Free text */}
-        <section>
+        <section className="flex flex-col">
           <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">직접 입력</h2>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 space-y-3 h-full">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 space-y-3 flex-1">
             <textarea
               placeholder="재생할 문장을 입력하세요."
               value={freeText}
@@ -105,7 +105,7 @@ export function InstantTab({ speak, isSpeaking }: Props) {
       {recentLog.length > 0 && (
         <section>
           <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">최근 재생</h2>
-          <div className="grid gap-2 md:grid-cols-3">
+          <div className="flex flex-col gap-2">
             {recentLog.map((msg, i) => (
               <div
                 key={i}
