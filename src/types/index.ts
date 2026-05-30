@@ -1,4 +1,4 @@
-export type Tab = 'instant' | 'schedule' | 'settings'
+export type Tab = 'instant' | 'schedule' | 'recent' | 'settings'
 
 export interface Schedule {
   id: string

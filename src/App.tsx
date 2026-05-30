@@ -5,17 +5,24 @@ import { useScheduler } from "./hooks/useScheduler";
 import { InstantTab } from "./components/InstantTab";
 import { ScheduleTab } from "./components/ScheduleTab";
 import { SettingsTab } from "./components/SettingsTab";
+import { RecentTab } from "./components/RecentTab";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: "instant", label: "즉시 재생", icon: "▶" },
+    { id: "recent", label: "최근 재생", icon: "🕐" },
     { id: "schedule", label: "자동 재생", icon: "⏰" },
     { id: "settings", label: "설정", icon: "⚙" },
 ];
 
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>("instant");
+    const [recentLog, setRecentLog] = useState<string[]>([]);
     const { speak, stop, isSpeaking, voices, settings, setSettings } = useTTS();
     const { schedules, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
+
+    const addToRecent = (text: string) => {
+        setRecentLog((prev) => [text, ...prev.filter((m) => m !== text)].slice(0, 5));
+    };
 
     return (
         <div className="flex flex-col min-h-svh bg-gray-50 md:max-w-4xl md:mx-auto">
@@ -70,7 +77,17 @@ function App() {
 
                 {/* Content */}
                 <main className="flex-1 overflow-y-auto">
-                    {activeTab === "instant" && <InstantTab speak={speak} isSpeaking={isSpeaking} />}
+                    {activeTab === "instant" && (
+                        <InstantTab speak={speak} isSpeaking={isSpeaking} onAddRecent={addToRecent} />
+                    )}
+                    {activeTab === "recent" && (
+                        <RecentTab
+                            recentLog={recentLog}
+                            speak={speak}
+                            isSpeaking={isSpeaking}
+                            onAddRecent={addToRecent}
+                        />
+                    )}
                     {activeTab === "schedule" && (
                         <ScheduleTab
                             schedules={schedules}

@@ -4,21 +4,18 @@ import { PRESET_MESSAGES, TEMPLATES } from '../constants'
 interface Props {
   speak: (text: string) => void
   isSpeaking: boolean
+  onAddRecent: (text: string) => void
 }
 
-export function InstantTab({ speak, isSpeaking }: Props) {
+export function InstantTab({ speak, isSpeaking, onAddRecent }: Props) {
   const [templateIndex, setTemplateIndex] = useState(0)
   const [templateVar, setTemplateVar] = useState('')
   const [freeText, setFreeText] = useState('')
-  const [recentLog, setRecentLog] = useState<string[]>([])
 
   const playCustom = (text: string) => {
     if (!text.trim()) return
     speak(text)
-    setRecentLog((prev) => {
-      const next = [text, ...prev.filter((m) => m !== text)].slice(0, 3)
-      return next
-    })
+    onAddRecent(text)
   }
 
   const buildTemplateMessage = () => {
@@ -41,7 +38,7 @@ export function InstantTab({ speak, isSpeaking }: Props) {
           {PRESET_MESSAGES.map((msg) => (
             <button
               key={msg}
-              onClick={() => speak(msg)}
+              onClick={() => { speak(msg); onAddRecent(msg) }}
               disabled={isSpeaking}
               className="w-full text-left px-4 py-3 md:py-5 md:text-base rounded-xl bg-white border border-gray-200 text-gray-800 font-medium shadow-sm active:scale-95 transition-transform disabled:opacity-50"
             >
@@ -107,30 +104,6 @@ export function InstantTab({ speak, isSpeaking }: Props) {
           </div>
         </section>
       </div>
-
-      {/* Recent log */}
-      {recentLog.length > 0 && (
-        <section>
-          <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">최근 재생</h2>
-          <div className="flex flex-col gap-2">
-            {recentLog.map((msg, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 md:py-4"
-              >
-                <span className="text-sm md:text-base text-gray-700 flex-1 mr-3 line-clamp-1">{msg}</span>
-                <button
-                  onClick={() => playCustom(msg)}
-                  disabled={isSpeaking}
-                  className="shrink-0 px-3 py-1 md:px-4 md:py-2 rounded-lg bg-gray-100 text-sm md:text-base text-gray-700 font-medium active:scale-95 transition-transform disabled:opacity-50"
-                >
-                  재생
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
