@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Schedule, Day } from '../types'
 import { ALL_DAYS } from '../constants'
+import { supabase } from '../lib/supabase'
 
 function todayDay(): Day {
   const days = ALL_DAYS
@@ -9,8 +10,22 @@ function todayDay(): Day {
 
 export function useScheduler(speak: (text: string) => void) {
   const [schedules, setSchedules] = useState<Schedule[]>([])
+  const [loading, setLoading] = useState(true)
   const spokenRef = useRef<Set<string>>(new Set())
 
+  // 초기 로드
+  useEffect(() => {
+    supabase
+      .from('schedules')
+      .select('id, time, message, days, enabled')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => {
+        if (data) setSchedules(data as Schedule[])
+        setLoading(false)
+      })
+  }, [])
+
+  // 자동 재생 타이머
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date()
@@ -27,7 +42,6 @@ export function useScheduler(speak: (text: string) => void) {
         speak(s.message)
       })
 
-      // clear spoken log on minute change
       if (now.getSeconds() === 0) {
         spokenRef.current.clear()
       }
@@ -36,17 +50,27 @@ export function useScheduler(speak: (text: string) => void) {
     return () => clearInterval(timer)
   }, [schedules, speak])
 
-  const addSchedule = (s: Omit<Schedule, 'id'>) => {
-    setSchedules((prev) => [...prev, { ...s, id: crypto.randomUUID() }])
+  const addSchedule = async (s: Omit<Schedule, 'id'>) => {
+    const { data } = await supabase
+      .from('schedules')
+      .insert(s)
+      .select('id, time, message, days, enabled')
+      .single()
+    if (data) setSchedules((prev) => [...prev, data as Schedule])
   }
 
-  const updateSchedule = (id: string, updates: Partial<Schedule>) => {
+  const updateSchedule = async (id: string, updates: Partial<Schedule>) => {
+    await supabase
+      .from('schedules')
+      .update({ ...updates, update_at: new Date().toISOString() })
+      .eq('id', id)
     setSchedules((prev) => prev.map((s) => (s.id === id ? { ...s, ...updates } : s)))
   }
 
-  const deleteSchedule = (id: string) => {
+  const deleteSchedule = async (id: string) => {
+    await supabase.from('schedules').delete().eq('id', id)
     setSchedules((prev) => prev.filter((s) => s.id !== id))
   }
 
-  return { schedules, addSchedule, updateSchedule, deleteSchedule }
+  return { schedules, loading, addSchedule, updateSchedule, deleteSchedule }
 }

@@ -17,8 +17,8 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>("instant");
     const [recentLog, setRecentLog] = useState<string[]>([]);
-    const { speak, stop, isSpeaking, voices, settings, setSettings } = useTTS();
-    const { schedules, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
+    const { speak, stop, isSpeaking, settings, setSettings } = useTTS();
+    const { schedules, loading, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
 
     const addToRecent = (text: string) => {
         setRecentLog((prev) => [text, ...prev.filter((m) => m !== text)].slice(0, 5));
@@ -91,13 +91,14 @@ function App() {
                     {activeTab === "schedule" && (
                         <ScheduleTab
                             schedules={schedules}
+                            loading={loading}
                             addSchedule={addSchedule}
                             updateSchedule={updateSchedule}
                             deleteSchedule={deleteSchedule}
                         />
                     )}
                     {activeTab === "settings" && (
-                        <SettingsTab voices={voices} settings={settings} setSettings={setSettings} speak={speak} />
+                        <SettingsTab settings={settings} setSettings={setSettings} speak={speak} />
                     )}
                 </main>
             </div>

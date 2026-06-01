@@ -1,48 +1,71 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import type { TTSSettings } from '../types'
+
+const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tts`
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 export function useTTS() {
   const [settings, setSettings] = useState<TTSSettings>({
-    voice: null,
+    voiceName: 'ko-KR-Neural2-A',
     rate: 1,
     volume: 1,
   })
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const [isSpeaking, setIsSpeaking] = useState(false)
-
-  useEffect(() => {
-    const loadVoices = () => {
-      const available = speechSynthesis.getVoices()
-      setVoices(available)
-      const korean = available.find((v) => v.lang.startsWith('ko'))
-      if (korean) setSettings((s) => ({ ...s, voice: korean }))
-    }
-
-    loadVoices()
-    speechSynthesis.addEventListener('voiceschanged', loadVoices)
-    return () => speechSynthesis.removeEventListener('voiceschanged', loadVoices)
-  }, [])
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const speak = useCallback(
-    (text: string) => {
-      speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.voice = settings.voice
-      utterance.rate = settings.rate
-      utterance.volume = settings.volume
-      utterance.lang = 'ko-KR'
-      utterance.onstart = () => setIsSpeaking(true)
-      utterance.onend = () => setIsSpeaking(false)
-      utterance.onerror = () => setIsSpeaking(false)
-      speechSynthesis.speak(utterance)
+    async (text: string) => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+
+      setIsSpeaking(true)
+
+      const res = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${ANON_KEY}`,
+        },
+        body: JSON.stringify({ text, voiceName: settings.voiceName }),
+      })
+
+      if (!res.ok) {
+        setIsSpeaking(false)
+        return
+      }
+
+      const buffer = await res.arrayBuffer()
+      const blob = new Blob([buffer], { type: 'audio/mpeg' })
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audio.playbackRate = settings.rate
+      audio.volume = settings.volume
+      audioRef.current = audio
+
+      audio.onended = () => {
+        URL.revokeObjectURL(url)
+        setIsSpeaking(false)
+      }
+      audio.onerror = () => {
+        URL.revokeObjectURL(url)
+        setIsSpeaking(false)
+      }
+
+      audio.play()
     },
     [settings],
   )
 
   const stop = useCallback(() => {
-    speechSynthesis.cancel()
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
     setIsSpeaking(false)
   }, [])
 
-  return { speak, stop, isSpeaking, voices, settings, setSettings }
+  return { speak, stop, isSpeaking, settings, setSettings }
 }

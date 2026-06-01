@@ -4,6 +4,7 @@ import { DAY_LABELS, ALL_DAYS, PRESET_MESSAGES } from '../constants'
 
 interface Props {
   schedules: Schedule[]
+  loading: boolean
   addSchedule: (s: Omit<Schedule, 'id'>) => void
   updateSchedule: (id: string, updates: Partial<Schedule>) => void
   deleteSchedule: (id: string) => void
@@ -16,7 +17,7 @@ const emptyForm = (): Omit<Schedule, 'id'> => ({
   enabled: true,
 })
 
-export function ScheduleTab({ schedules, addSchedule, updateSchedule, deleteSchedule }: Props) {
+export function ScheduleTab({ schedules, loading, addSchedule, updateSchedule, deleteSchedule }: Props) {
   const [form, setForm] = useState(emptyForm)
   const [showForm, setShowForm] = useState(false)
 
@@ -114,7 +115,9 @@ export function ScheduleTab({ schedules, addSchedule, updateSchedule, deleteSche
         </div>
       )}
 
-      {schedules.length === 0 ? (
+      {loading ? (
+        <p className="text-center text-gray-400 text-sm md:text-base py-8 md:py-16">불러오는 중...</p>
+      ) : schedules.length === 0 ? (
         <p className="text-center text-gray-400 text-sm md:text-base py-8 md:py-16">
           등록된 스케줄이 없습니다.
         </p>

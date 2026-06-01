@@ -1,13 +1,13 @@
 import type { TTSSettings } from '../types'
+import { GOOGLE_TTS_VOICES } from '../constants'
 
 interface Props {
-  voices: SpeechSynthesisVoice[]
   settings: TTSSettings
   setSettings: React.Dispatch<React.SetStateAction<TTSSettings>>
   speak: (text: string) => void
 }
 
-export function SettingsTab({ voices, settings, setSettings, speak }: Props) {
+export function SettingsTab({ settings, setSettings, speak }: Props) {
   return (
     <div className="p-4 md:p-6 md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
       <section>
@@ -16,17 +16,13 @@ export function SettingsTab({ voices, settings, setSettings, speak }: Props) {
           <div>
             <label className="text-xs md:text-sm font-semibold text-gray-500 mb-1 block">목소리</label>
             <select
-              value={settings.voice?.name ?? ''}
-              onChange={(e) => {
-                const voice = voices.find((v) => v.name === e.target.value) ?? null
-                setSettings((s) => ({ ...s, voice }))
-              }}
+              value={settings.voiceName}
+              onChange={(e) => setSettings((s) => ({ ...s, voiceName: e.target.value }))}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 md:py-3 text-sm md:text-base"
             >
-              {voices.length === 0 && <option value="">로딩 중...</option>}
-              {voices.map((v) => (
+              {GOOGLE_TTS_VOICES.map((v) => (
                 <option key={v.name} value={v.name}>
-                  {v.name} ({v.lang})
+                  {v.label}
                 </option>
               ))}
             </select>

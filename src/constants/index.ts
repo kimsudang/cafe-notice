@@ -21,3 +21,17 @@ export const DAY_LABELS: Record<string, string> = {
 }
 
 export const ALL_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
+
+export const GOOGLE_TTS_VOICES = [
+  { name: 'ko-KR-Neural2-A', label: 'Neural2 여성 A (고품질)' },
+  { name: 'ko-KR-Neural2-B', label: 'Neural2 여성 B (고품질)' },
+  { name: 'ko-KR-Neural2-C', label: 'Neural2 남성 C (고품질)' },
+  { name: 'ko-KR-Wavenet-A', label: 'WaveNet 여성 A' },
+  { name: 'ko-KR-Wavenet-B', label: 'WaveNet 여성 B' },
+  { name: 'ko-KR-Wavenet-C', label: 'WaveNet 남성 C' },
+  { name: 'ko-KR-Wavenet-D', label: 'WaveNet 남성 D' },
+  { name: 'ko-KR-Standard-A', label: 'Standard 여성 A' },
+  { name: 'ko-KR-Standard-B', label: 'Standard 여성 B' },
+  { name: 'ko-KR-Standard-C', label: 'Standard 남성 C' },
+  { name: 'ko-KR-Standard-D', label: 'Standard 남성 D' },
+]

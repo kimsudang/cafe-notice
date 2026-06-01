@@ -11,7 +11,7 @@ export interface Schedule {
 export type Day = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 
 export interface TTSSettings {
-  voice: SpeechSynthesisVoice | null
+  voiceName: string
   rate: number
   volume: number
 }
