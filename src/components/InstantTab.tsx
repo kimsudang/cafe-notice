@@ -36,7 +36,7 @@ export function InstantTab({ speak, isSpeaking, onAddRecent, presetMessages }: P
       <section>
         <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">기본 문장</h2>
         <div className="grid gap-2 md:grid-cols-2">
-          {presetMessages.map((msg) => (
+          {presetMessages.slice(0, 4).map((msg) => (
             <button
               key={msg}
               onClick={() => { speak(msg); onAddRecent(msg) }}
