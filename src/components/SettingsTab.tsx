@@ -81,23 +81,29 @@ export function SettingsTab({ settings, setSettings, speak, presetItems, addPres
       <section>
         <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">기본 문구 관리</h2>
         <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 space-y-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="새 문구를 입력하세요"
-              value={newPhrase}
-              onChange={(e) => setNewPhrase(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm md:text-base"
-            />
-            <button
-              onClick={handleAdd}
-              disabled={!newPhrase.trim()}
-              className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm md:text-base font-semibold disabled:opacity-40"
-            >
-              추가
-            </button>
-          </div>
+          {presetItems.length < 6 ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="새 문구를 입력하세요"
+                value={newPhrase}
+                onChange={(e) => setNewPhrase(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm md:text-base"
+              />
+              <button
+                onClick={handleAdd}
+                disabled={!newPhrase.trim()}
+                className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm md:text-base font-semibold disabled:opacity-40"
+              >
+                추가
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm md:text-base text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              최대 문장의 개수는 6개입니다. 추가 등록을 원하면 기존 항목을 삭제하고 등록하세요.
+            </p>
+          )}
           {presetItems.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-2">등록된 문구가 없습니다.</p>
           ) : (
