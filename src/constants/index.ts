@@ -7,7 +7,7 @@ export const PRESET_MESSAGES = [
 
 export const TEMPLATES = [
   { label: '번호 호출', template: '${number}번 손님, 음료 나왔습니다.', inputType: 'number' as const },
-  { label: '음료 호출', template: '${string} 음료 나왔습니다', inputType: 'text' as const },
+  { label: '음료 호출', template: '${string} 나왔습니다', inputType: 'text' as const },
 ]
 
 export const DAY_LABELS: Record<string, string> = {
