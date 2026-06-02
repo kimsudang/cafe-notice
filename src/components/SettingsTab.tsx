@@ -21,7 +21,7 @@ interface Props {
   reorderPresets: (orderedIds: string[]) => void
 }
 
-function SortableItem({ item, index, onDelete }: { item: PresetItem; index: number; onDelete: () => void }) {
+function SortableItem({ item, onDelete }: { item: PresetItem; onDelete: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -105,7 +105,7 @@ export function SettingsTab({ settings, setSettings, speak, presetItems, addPres
               <SortableContext items={presetItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
                 <ul className="space-y-2">
                   {presetItems.map((item, i) => (
-                    <SortableItem key={item.id} item={item} index={i} onDelete={() => deletePreset(i)} />
+                    <SortableItem key={item.id} item={item} onDelete={() => deletePreset(i)} />
                   ))}
                 </ul>
               </SortableContext>
