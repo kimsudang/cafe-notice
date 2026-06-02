@@ -6,6 +6,7 @@ import { InstantTab } from "./components/InstantTab";
 import { ScheduleTab } from "./components/ScheduleTab";
 import { SettingsTab } from "./components/SettingsTab";
 import { RecentTab } from "./components/RecentTab";
+import { PRESET_MESSAGES } from "./constants";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: "instant", label: "즉시 재생", icon: "▶" },
@@ -17,11 +18,27 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>("instant");
     const [recentLog, setRecentLog] = useState<string[]>([]);
+    const [presetMessages, setPresetMessages] = useState<string[]>(() => {
+        const stored = localStorage.getItem("presetMessages");
+        return stored ? JSON.parse(stored) : PRESET_MESSAGES;
+    });
     const { speak, stop, isSpeaking, settings, setSettings } = useTTS();
     const { schedules, loading, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
 
     const addToRecent = (text: string) => {
         setRecentLog((prev) => [text, ...prev.filter((m) => m !== text)].slice(0, 5));
+    };
+
+    const addPreset = (text: string) => {
+        const next = [...presetMessages, text];
+        setPresetMessages(next);
+        localStorage.setItem("presetMessages", JSON.stringify(next));
+    };
+
+    const deletePreset = (index: number) => {
+        const next = presetMessages.filter((_, i) => i !== index);
+        setPresetMessages(next);
+        localStorage.setItem("presetMessages", JSON.stringify(next));
     };
 
     return (
@@ -78,7 +95,7 @@ function App() {
                 {/* Content */}
                 <main className="flex-1 overflow-y-auto">
                     {activeTab === "instant" && (
-                        <InstantTab speak={speak} isSpeaking={isSpeaking} onAddRecent={addToRecent} />
+                        <InstantTab speak={speak} isSpeaking={isSpeaking} onAddRecent={addToRecent} presetMessages={presetMessages} />
                     )}
                     {activeTab === "recent" && (
                         <RecentTab
@@ -98,7 +115,7 @@ function App() {
                         />
                     )}
                     {activeTab === "settings" && (
-                        <SettingsTab settings={settings} setSettings={setSettings} speak={speak} />
+                        <SettingsTab settings={settings} setSettings={setSettings} speak={speak} presetMessages={presetMessages} addPreset={addPreset} deletePreset={deletePreset} />
                     )}
                 </main>
             </div>

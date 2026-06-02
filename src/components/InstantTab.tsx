@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { PRESET_MESSAGES, TEMPLATES } from '../constants'
+import { TEMPLATES } from '../constants'
 
 interface Props {
   speak: (text: string) => void
   isSpeaking: boolean
   onAddRecent: (text: string) => void
+  presetMessages: string[]
 }
 
-export function InstantTab({ speak, isSpeaking, onAddRecent }: Props) {
+export function InstantTab({ speak, isSpeaking, onAddRecent, presetMessages }: Props) {
   const [templateIndex, setTemplateIndex] = useState(0)
   const [templateVar, setTemplateVar] = useState('')
   const [freeText, setFreeText] = useState('')
@@ -35,7 +36,7 @@ export function InstantTab({ speak, isSpeaking, onAddRecent }: Props) {
       <section>
         <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">기본 문장</h2>
         <div className="grid gap-2 md:grid-cols-2">
-          {PRESET_MESSAGES.map((msg) => (
+          {presetMessages.map((msg) => (
             <button
               key={msg}
               onClick={() => { speak(msg); onAddRecent(msg) }}

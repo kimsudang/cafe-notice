@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { TTSSettings } from '../types'
 import { GOOGLE_TTS_VOICES } from '../constants'
 
@@ -5,11 +6,65 @@ interface Props {
   settings: TTSSettings
   setSettings: React.Dispatch<React.SetStateAction<TTSSettings>>
   speak: (text: string) => void
+  presetMessages: string[]
+  addPreset: (text: string) => void
+  deletePreset: (index: number) => void
 }
 
-export function SettingsTab({ settings, setSettings, speak }: Props) {
+export function SettingsTab({ settings, setSettings, speak, presetMessages, addPreset, deletePreset }: Props) {
+  const [newPhrase, setNewPhrase] = useState('')
+
+  const handleAdd = () => {
+    const trimmed = newPhrase.trim()
+    if (!trimmed) return
+    addPreset(trimmed)
+    setNewPhrase('')
+  }
+
   return (
-    <div className="p-4 md:p-6 md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+    <div className="p-4 md:p-6 flex flex-col gap-6">
+      <section>
+        <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">기본 문구 관리</h2>
+        <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 space-y-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="새 문구를 입력하세요"
+              value={newPhrase}
+              onChange={(e) => setNewPhrase(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm md:text-base"
+            />
+            <button
+              onClick={handleAdd}
+              disabled={!newPhrase.trim()}
+              className="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm md:text-base font-semibold disabled:opacity-40"
+            >
+              추가
+            </button>
+          </div>
+          {presetMessages.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-2">등록된 문구가 없습니다.</p>
+          ) : (
+            <ul className="space-y-2">
+              {presetMessages.map((msg, i) => (
+                <li key={i} className="flex items-center justify-between gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                  <span className="text-sm md:text-base text-gray-800 flex-1">{msg}</span>
+                  <button
+                    onClick={() => deletePreset(i)}
+                    className="text-gray-400 hover:text-red-500 transition-colors text-lg leading-none px-1"
+                    aria-label="삭제"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
       <section>
         <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-3">음성 설정</h2>
         <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 space-y-5">
@@ -79,6 +134,7 @@ export function SettingsTab({ settings, setSettings, speak }: Props) {
           </p>
         </div>
       </section>
+      </div>
     </div>
   )
 }
