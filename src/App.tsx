@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>("instant");
     const [recentLog, setRecentLog] = useState<string[]>([]);
-    const { presetMessages, addPreset, deletePreset } = usePresetMessages();
+    const { presetMessages, presetItems, addPreset, deletePreset, reorderPresets } = usePresetMessages();
     const { speak, stop, isSpeaking, settings, setSettings } = useTTS();
     const { schedules, loading, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
 
@@ -100,7 +100,7 @@ function App() {
                         />
                     )}
                     {activeTab === "settings" && (
-                        <SettingsTab settings={settings} setSettings={setSettings} speak={speak} presetMessages={presetMessages} addPreset={addPreset} deletePreset={deletePreset} />
+                        <SettingsTab settings={settings} setSettings={setSettings} speak={speak} presetMessages={presetMessages} presetItems={presetItems} addPreset={addPreset} deletePreset={deletePreset} reorderPresets={reorderPresets} />
                     )}
                 </main>
             </div>
