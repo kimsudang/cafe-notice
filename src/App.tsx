@@ -2,11 +2,11 @@ import { useState } from "react";
 import type { Tab } from "./types";
 import { useTTS } from "./hooks/useTTS";
 import { useScheduler } from "./hooks/useScheduler";
+import { usePresetMessages } from "./hooks/usePresetMessages";
 import { InstantTab } from "./components/InstantTab";
 import { ScheduleTab } from "./components/ScheduleTab";
 import { SettingsTab } from "./components/SettingsTab";
 import { RecentTab } from "./components/RecentTab";
-import { PRESET_MESSAGES } from "./constants";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
     { id: "instant", label: "즉시 재생", icon: "▶" },
@@ -18,27 +18,12 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 function App() {
     const [activeTab, setActiveTab] = useState<Tab>("instant");
     const [recentLog, setRecentLog] = useState<string[]>([]);
-    const [presetMessages, setPresetMessages] = useState<string[]>(() => {
-        const stored = localStorage.getItem("presetMessages");
-        return stored ? JSON.parse(stored) : PRESET_MESSAGES;
-    });
+    const { presetMessages, addPreset, deletePreset } = usePresetMessages();
     const { speak, stop, isSpeaking, settings, setSettings } = useTTS();
     const { schedules, loading, addSchedule, updateSchedule, deleteSchedule } = useScheduler(speak);
 
     const addToRecent = (text: string) => {
         setRecentLog((prev) => [text, ...prev.filter((m) => m !== text)].slice(0, 5));
-    };
-
-    const addPreset = (text: string) => {
-        const next = [...presetMessages, text];
-        setPresetMessages(next);
-        localStorage.setItem("presetMessages", JSON.stringify(next));
-    };
-
-    const deletePreset = (index: number) => {
-        const next = presetMessages.filter((_, i) => i !== index);
-        setPresetMessages(next);
-        localStorage.setItem("presetMessages", JSON.stringify(next));
     };
 
     return (
